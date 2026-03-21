@@ -103,6 +103,7 @@ graph TD
 
     F --> I[(PostgreSQL)]
     F --> J[(Neo4j)]
+```
 
 ### 🧮 Mathematical Modeling
 
