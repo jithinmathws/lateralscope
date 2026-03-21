@@ -92,11 +92,17 @@ The system is designed as a backend-first cyber analytics engine.
 
 ```mermaid
 graph TD
-    A[Frontend (Future UI)] --> B[FastAPI API Layer]
+    A[Frontend - Future UI] --> B[FastAPI API Layer]
     B --> C[Service Layer]
-    C --> D[NetworkX Analysis Engine]
-    C --> E[Neo4j Graph Store]
-    C --> F[(PostgreSQL)]
+    C --> D[Analysis Layer]
+    C --> E[Graph Layer]
+    C --> F[Persistence Layer]
+
+    E --> G[NetworkX Adapter]
+    E --> H[Neo4j Adapter]
+
+    F --> I[(PostgreSQL)]
+    F --> J[(Neo4j)]
 
 ### 🧮 Mathematical Modeling
 
