@@ -97,7 +97,6 @@ graph TD
     C --> D[NetworkX Analysis Engine]
     C --> E[Neo4j Graph Store]
     C --> F[(PostgreSQL)]
-```
 
 ### 🧮 Mathematical Modeling
 
