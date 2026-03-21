@@ -166,21 +166,23 @@ BlastRadius(node) = set of all reachable nodes
 
 ## 📁 Project Structure
 
+```
 lateralscope/
-    app/
-        api/              # FastAPI routes
-        services/         # orchestration layer
-        analysis/         # attack path & simulation logic
-        graph/            # graph builders & adapters
-        schemas/          # request/response models
-        models/           # database models
-        db/               # database setup
-        core/             # config & logging
-    data/                 # synthetic & test datasets
-    tests/                # unit & scenario tests
-    docker/               # Docker configs
-    docker-compose.yml
-    README.md
+├── app/
+│   ├── api/              # FastAPI routes
+│   ├── services/         # orchestration layer
+│   ├── analysis/         # attack path & simulation logic
+│   ├── graph/            # graph builders & adapters
+│   ├── schemas/          # request/response models
+│   ├── models/           # database models
+│   ├── db/               # database setup
+│   └── core/             # config & logging
+├── data/                 # synthetic & test datasets
+├── tests/                # unit & scenario tests
+├── docker/               # Docker configs
+├── docker-compose.yml
+└── README.md
+```
 
 ## 🚀 Getting Started
 
