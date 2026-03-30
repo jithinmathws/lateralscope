@@ -1,9 +1,7 @@
 import pytest
 
-from app.graph.builders.enterprise_graph_builder import (
-    EnterpriseGraphBuilder,
-    GraphBuildError,
-)
+from app.core.exceptions import GraphBuildError
+from app.graph.builders.enterprise_graph_builder import EnterpriseGraphBuilder
 from app.graph.loaders.synthetic_loader import load_sample_enterprise_data
 from app.graph.types import EdgeData, EdgeType, NodeData, NodeType
 

@@ -1,5 +1,6 @@
 import pytest
 
+from app.core.exceptions import ConstraintConflictError, NodeNotFoundError
 from app.graph.builders.enterprise_graph_builder import EnterpriseGraphBuilder
 from app.graph.loaders.synthetic_loader import load_sample_enterprise_data
 from app.services.simulation_service import SimulationRequest, SimulationService
@@ -127,7 +128,7 @@ def test_run_simulation_enforces_exclusive_constraints(simulation_service) -> No
         max_hops=5,
     )
 
-    with pytest.raises(ValueError, match="Specify either 'budget' or 'max_hops'"):
+    with pytest.raises(ConstraintConflictError, match="Specify either 'budget' or 'max_hops'"):
         simulation_service.run_simulation(request)
 
 
@@ -137,7 +138,7 @@ def test_run_simulation_rejects_missing_source(simulation_service) -> None:
         target="db_prod_01",
     )
 
-    with pytest.raises(ValueError, match="Simulation error: Node 'missing_source' does not exist."):
+    with pytest.raises(NodeNotFoundError, match="Simulation error: Node 'missing_source' does not exist."):
         simulation_service.run_simulation(request)
 
 
@@ -147,5 +148,5 @@ def test_run_simulation_rejects_missing_target(simulation_service) -> None:
         target="missing_target",
     )
 
-    with pytest.raises(ValueError, match="Simulation error: Node 'missing_target' does not exist."):
+    with pytest.raises(NodeNotFoundError, match="Simulation error: Node 'missing_target' does not exist."):
         simulation_service.run_simulation(request)

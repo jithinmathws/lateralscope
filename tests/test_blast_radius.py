@@ -1,6 +1,7 @@
 import pytest
 
 from app.analysis.blast_radius import BlastRadiusEngine
+from app.core.exceptions import DomainValidationError, NodeNotFoundError
 from app.graph.builders.enterprise_graph_builder import EnterpriseGraphBuilder
 from app.graph.loaders.synthetic_loader import load_sample_enterprise_data
 
@@ -122,15 +123,15 @@ def test_exposure_score_is_positive(blast_engine) -> None:
 
 
 def test_compute_full_radius_rejects_missing_node(blast_engine) -> None:
-    with pytest.raises(ValueError, match="does not exist in the current graph"):
+    with pytest.raises(NodeNotFoundError, match="does not exist in the current graph"):
         blast_engine.compute_full_radius("missing_node")
 
 
 def test_compute_budgeted_radius_rejects_negative_budget(blast_engine) -> None:
-    with pytest.raises(ValueError, match="Budget must be non-negative"):
+    with pytest.raises(DomainValidationError, match="Budget must be non-negative"):
         blast_engine.compute_budgeted_radius("user_alice", budget=-1.0)
 
 
 def test_compute_depth_limited_radius_rejects_negative_hops(blast_engine) -> None:
-    with pytest.raises(ValueError, match="max_hops must be non-negative"):
+    with pytest.raises(DomainValidationError, match="max_hops must be non-negative"):
         blast_engine.compute_depth_limited_radius("user_alice", max_hops=-1)

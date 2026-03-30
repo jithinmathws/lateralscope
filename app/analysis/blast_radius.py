@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 import networkx as nx
 
+from app.core.exceptions import DomainValidationError, NodeNotFoundError
+
 
 @dataclass(frozen=True)
 class BlastRadiusResult:
@@ -46,7 +48,7 @@ class BlastRadiusEngine:
         self._validate_node(source)
 
         if budget < 0:
-            raise ValueError("Budget must be non-negative")
+            raise DomainValidationError("Budget must be non-negative.")
 
         path_costs = nx.single_source_dijkstra_path_length(
             self.graph,
@@ -64,7 +66,7 @@ class BlastRadiusEngine:
         self._validate_node(source)
 
         if max_hops < 0:
-            raise ValueError("max_hops must be non-negative")
+            raise DomainValidationError("max_hops must be non-negative.")
 
         hops = nx.single_source_shortest_path_length(
             self.graph,
@@ -108,7 +110,9 @@ class BlastRadiusEngine:
 
     def _validate_node(self, node_id: str) -> None:
         if node_id not in self.graph:
-            raise ValueError(f"Node '{node_id}' does not exist in the current graph.")
+            raise NodeNotFoundError(
+                f"Node '{node_id}' does not exist in the current graph."
+            )
 
     def _assemble_result(self, source: str, path_costs: dict[str, float]) -> BlastRadiusResult:
         reachable_nodes = set(path_costs.keys())
@@ -129,7 +133,10 @@ class BlastRadiusEngine:
         # - crown_jewel nodes contribute 10
         # - all other nodes contribute 1
         # This can later be replaced by asset-specific criticality weights.
-        score = sum(10.0 if node_type == "crown_jewel" else 1.0 for node_type in node_types)
+        score = sum(
+            10.0 if node_type == "crown_jewel" else 1.0
+            for node_type in node_types
+        )
 
         return BlastRadiusResult(
             source=source,

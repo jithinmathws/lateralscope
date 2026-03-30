@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+from typing import Any
+
 import networkx as nx
 
-
-class AttackPathNotFound(Exception):
-    """Raised when no attack path exists between source and target."""
+from app.core.exceptions import (
+    AttackPathNotFoundError,
+    DomainValidationError,
+    EdgeNotFoundError,
+    NodeNotFoundError,
+)
 
 
 def find_shortest_attack_path(
@@ -16,10 +21,10 @@ def find_shortest_attack_path(
     Find the lowest-cost attack path between source and target using edge weights.
     """
     if source not in graph:
-        raise ValueError(f"Source node '{source}' not found in graph")
+        raise NodeNotFoundError(f"Source node '{source}' not found in graph.")
 
     if target not in graph:
-        raise ValueError(f"Target node '{target}' not found in graph")
+        raise NodeNotFoundError(f"Target node '{target}' not found in graph.")
 
     try:
         return nx.shortest_path(
@@ -29,8 +34,8 @@ def find_shortest_attack_path(
             weight="weight",
         )
     except nx.NetworkXNoPath as exc:
-        raise AttackPathNotFound(
-            f"No attack path from '{source}' to '{target}'"
+        raise AttackPathNotFoundError(
+            f"No attack path from '{source}' to '{target}'."
         ) from exc
 
 
@@ -54,7 +59,7 @@ def calculate_path_cost(
 
         edge_bundle = graph.get_edge_data(u, v)
         if not edge_bundle:
-            raise ValueError(f"No edge exists between '{u}' and '{v}'")
+            raise EdgeNotFoundError(f"No edge exists between '{u}' and '{v}'.")
 
         min_weight = min(edge_data["weight"] for edge_data in edge_bundle.values())
         total_cost += min_weight
@@ -78,7 +83,7 @@ def find_attack_path_with_cost(
 def get_path_step_details(
     graph: nx.MultiDiGraph,
     path: list[str],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """
     Return step-by-step details for a path.
 
@@ -87,7 +92,7 @@ def get_path_step_details(
     if len(path) < 2:
         return []
 
-    steps: list[dict] = []
+    steps: list[dict[str, Any]] = []
 
     for i in range(len(path) - 1):
         u = path[i]
@@ -95,7 +100,7 @@ def get_path_step_details(
 
         edge_bundle = graph.get_edge_data(u, v)
         if not edge_bundle:
-            raise ValueError(f"No edge exists between '{u}' and '{v}'")
+            raise EdgeNotFoundError(f"No edge exists between '{u}' and '{v}'.")
 
         best_edge_key = min(edge_bundle, key=lambda k: edge_bundle[k]["weight"])
         best_edge = edge_bundle[best_edge_key]
@@ -125,13 +130,17 @@ def get_blast_radius_with_budget(
     budget: float,
 ) -> set[str]:
     """
-    Return all nodes reachable from source within a total attacker effort budget.
+    Compatibility helper for budget-limited reachability.
+
+    Note:
+        New code should prefer BlastRadiusEngine.compute_budgeted_radius(...)
+        from app.analysis.blast_radius.
     """
     if source not in graph:
-        raise ValueError(f"Source node '{source}' not found in graph")
+        raise NodeNotFoundError(f"Source node '{source}' not found in graph.")
 
     if budget < 0:
-        raise ValueError("Budget must be non-negative")
+        raise DomainValidationError("Budget must be non-negative.")
 
     lengths = nx.single_source_dijkstra_path_length(
         graph,

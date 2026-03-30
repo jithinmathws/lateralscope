@@ -6,11 +6,8 @@ from typing import Dict, List, Set
 
 import networkx as nx
 
+from app.core.exceptions import GraphBuildError
 from app.graph.types import EdgeData, NodeData
-
-
-class GraphBuildError(Exception):
-    """Raised when the enterprise graph cannot be built safely."""
 
 
 @dataclass(frozen=True)

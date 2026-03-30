@@ -6,11 +6,15 @@ from typing import Any
 import networkx as nx
 
 from app.analysis.attack_path_engine import (
-    AttackPathNotFound,
     find_attack_path_with_cost,
     get_path_step_details,
 )
 from app.analysis.blast_radius import BlastRadiusEngine, BlastRadiusResult
+from app.core.exceptions import (
+    AttackPathNotFoundError,
+    ConstraintConflictError,
+    NodeNotFoundError,
+)
 
 
 @dataclass(frozen=True)
@@ -83,7 +87,7 @@ class SimulationService:
                 error=None,
             )
 
-        except AttackPathNotFound as exc:
+        except AttackPathNotFoundError as exc:
             return self._build_empty_path_result(
                 request=request,
                 blast_result=blast_result,
@@ -92,11 +96,15 @@ class SimulationService:
 
     def _validate_request(self, request: SimulationRequest) -> None:
         if request.budget is not None and request.max_hops is not None:
-            raise ValueError("Specify either 'budget' or 'max_hops', not both.")
+            raise ConstraintConflictError(
+                "Specify either 'budget' or 'max_hops', not both."
+            )
 
         for node in (request.source, request.target):
             if node not in self.graph:
-                raise ValueError(f"Simulation error: Node '{node}' does not exist.")
+                raise NodeNotFoundError(
+                    f"Simulation error: Node '{node}' does not exist."
+                )
 
     def _compute_blast_radius(self, request: SimulationRequest) -> BlastRadiusResult:
         if request.budget is not None:
