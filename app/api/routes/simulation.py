@@ -8,6 +8,7 @@ from app.core.exceptions import (
 )
 from app.schemas.simulation import (
     AttackStepSchema,
+    BlastRadiusRequestSchema,
     BlastRadiusSchema,
     SimulationRequestSchema,
     SimulationResponseSchema,
@@ -83,3 +84,38 @@ def simulate_attack(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Simulation failed: {exc}") from exc
+
+
+@router.post("/blast-radius", response_model=BlastRadiusSchema)
+def compute_blast_radius(
+    payload: BlastRadiusRequestSchema,
+    service: GraphService = Depends(get_service),
+) -> BlastRadiusSchema:
+    try:
+        if payload.budget is not None:
+            result = service.blast_radius_engine.compute_budgeted_radius(
+                payload.source,
+                payload.budget,
+            )
+        elif payload.max_hops is not None:
+            result = service.blast_radius_engine.compute_depth_limited_radius(
+                payload.source,
+                payload.max_hops,
+            )
+        else:
+            result = service.blast_radius_engine.compute_full_radius(payload.source)
+
+        return BlastRadiusSchema(
+            source=result.source,
+            reachable_nodes=sorted(result.reachable_nodes),
+            reachable_node_count=result.reachable_node_count,
+            node_type_summary=result.node_type_summary,
+            path_costs=result.path_costs,
+            critical_nodes_reached=sorted(result.critical_nodes_reached),
+            exposure_score=result.exposure_score,
+        )
+
+    except (NodeNotFoundError, ConstraintConflictError, DomainValidationError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Blast radius failed: {exc}") from exc

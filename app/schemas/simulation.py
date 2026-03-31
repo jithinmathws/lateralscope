@@ -35,6 +35,16 @@ class BlastRadiusSchema(BaseModel):
     critical_nodes_reached: list[str]
     exposure_score: float
 
+class BlastRadiusRequestSchema(BaseModel):
+    source: str = Field(..., min_length=1, description="Starting node ID")
+    budget: float | None = Field(default=None, gt=0)
+    max_hops: int | None = Field(default=None, ge=1)
+
+    @model_validator(mode="after")
+    def validate_constraints(self) -> "BlastRadiusRequestSchema":
+        if self.budget is not None and self.max_hops is not None:
+            raise ValueError("Specify either 'budget' or 'max_hops', not both.")
+        return self
 
 class SimulationResponseSchema(BaseModel):
     source: str

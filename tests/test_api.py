@@ -83,3 +83,57 @@ def test_simulate_endpoint_conflicting_constraints():
     response = client.post("/api/simulate", json=payload)
 
     assert response.status_code == 422
+
+def test_blast_radius_endpoint_full():
+    payload = {
+        "source": "user_alice",
+    }
+
+    response = client.post("/api/blast-radius", json=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["source"] == "user_alice"
+    assert data["reachable_node_count"] == 5
+    assert "db_prod_01" in data["critical_nodes_reached"]
+    assert data["exposure_score"] == 14.0
+
+
+def test_blast_radius_endpoint_budgeted():
+    payload = {
+        "source": "user_alice",
+        "budget": 2,
+    }
+
+    response = client.post("/api/blast-radius", json=payload)
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["source"] == "user_alice"
+    assert data["reachable_node_count"] == 4
+    assert "db_prod_01" not in data["reachable_nodes"]
+
+
+def test_blast_radius_endpoint_invalid_node():
+    payload = {
+        "source": "not_a_real_node",
+    }
+
+    response = client.post("/api/blast-radius", json=payload)
+
+    assert response.status_code == 400
+    assert "does not exist" in response.json()["detail"]
+
+
+def test_blast_radius_endpoint_conflicting_constraints():
+    payload = {
+        "source": "user_alice",
+        "budget": 2,
+        "max_hops": 2,
+    }
+
+    response = client.post("/api/blast-radius", json=payload)
+
+    assert response.status_code == 422

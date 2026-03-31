@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from app.analysis.blast_radius import BlastRadiusEngine
 from app.graph.builders.enterprise_graph_builder import EnterpriseGraphBuilder
 from app.graph.types import EdgeData, EdgeType, NodeData, NodeType
 from app.services.simulation_service import SimulationService
@@ -20,6 +21,7 @@ class GraphService:
         self.graph = builder.build_graph(nodes=nodes, edges=edges)
         self.summary = builder.summarize(self.graph)
         self.simulation_service = SimulationService(self.graph)
+        self.blast_radius_engine = BlastRadiusEngine(self.graph)
 
     def _load_nodes(self) -> list[NodeData]:
         return [
