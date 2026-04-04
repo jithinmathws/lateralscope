@@ -7,7 +7,12 @@ from app.services.graph_service import GraphService
 router = APIRouter(tags=["graph"])
 
 
-@router.get("/graph/summary", response_model=GraphSummaryResponse)
+@router.get(
+    "/graph/summary",
+    response_model=GraphSummaryResponse,
+    summary="Get graph summary",
+    description="Returns structural metadata about the loaded enterprise graph, including node counts, edge counts, and type distributions.",
+)
 def get_graph_summary(
     service: GraphService = Depends(get_service),
 ) -> GraphSummaryResponse:

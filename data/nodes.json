@@ -1,0 +1,40 @@
+[
+  {
+    "id": "user_alice",
+    "type": "identity",
+    "label": "Alice",
+    "attributes": {
+      "department": "Finance"
+    }
+  },
+  {
+    "id": "group_it_admins",
+    "type": "group",
+    "label": "IT Admins",
+    "attributes": {}
+  },
+  {
+    "id": "ws_001",
+    "type": "host",
+    "label": "Workstation 001",
+    "attributes": {
+      "os": "Windows"
+    }
+  },
+  {
+    "id": "app_srv_01",
+    "type": "host",
+    "label": "App Server 01",
+    "attributes": {
+      "os": "Linux"
+    }
+  },
+  {
+    "id": "db_prod_01",
+    "type": "crown_jewel",
+    "label": "Production Database",
+    "attributes": {
+      "criticality": "high"
+    }
+  }
+]

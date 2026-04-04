@@ -19,7 +19,12 @@ from app.services.simulation_service import SimulationRequest
 router = APIRouter(tags=["simulation"])
 
 
-@router.post("/simulate", response_model=SimulationResponseSchema)
+@router.post(
+    "/simulate",
+    response_model=SimulationResponseSchema,
+    summary="Run attack path simulation",
+    description="Simulates an attack path from a source node to a target node and returns path details, path cost, blast radius, and a heuristic risk score.",
+)
 def simulate_attack(
     payload: SimulationRequestSchema,
     service: GraphService = Depends(get_service),
@@ -86,7 +91,12 @@ def simulate_attack(
         raise HTTPException(status_code=500, detail=f"Simulation failed: {exc}") from exc
 
 
-@router.post("/blast-radius", response_model=BlastRadiusSchema)
+@router.post(
+    "/blast-radius",
+    response_model=BlastRadiusSchema,
+    summary="Compute blast radius",
+    description="Calculates reachable nodes, exposure score, path costs, and critical nodes reachable from a chosen source node. Supports optional budget or hop-depth constraints.",
+)
 def compute_blast_radius(
     payload: BlastRadiusRequestSchema,
     service: GraphService = Depends(get_service),

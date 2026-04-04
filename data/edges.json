@@ -1,0 +1,37 @@
+[
+  {
+    "source": "user_alice",
+    "target": "group_it_admins",
+    "type": "MEMBER_OF",
+    "weight": 1.0,
+    "attributes": {}
+  },
+  {
+    "source": "group_it_admins",
+    "target": "ws_001",
+    "type": "ADMIN_ON",
+    "weight": 1.0,
+    "attributes": {}
+  },
+  {
+    "source": "user_alice",
+    "target": "ws_001",
+    "type": "HAS_SESSION",
+    "weight": 1.0,
+    "attributes": {}
+  },
+  {
+    "source": "ws_001",
+    "target": "app_srv_01",
+    "type": "CAN_RDP_TO",
+    "weight": 1.0,
+    "attributes": {}
+  },
+  {
+    "source": "app_srv_01",
+    "target": "db_prod_01",
+    "type": "CAN_SSH_TO",
+    "weight": 1.0,
+    "attributes": {}
+  }
+]
